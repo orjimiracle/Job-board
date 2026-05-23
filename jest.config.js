@@ -1,4 +1,7 @@
 /** @type {import('jest').Config} */
+const nextJest = require('next/jest');
+
+// This needs to be a regular Jest config for the transform to work reliably
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
