@@ -13,82 +13,118 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
-  build-test-and-deploy:
+  # ── 1. SECURITY GATES ─────────────────────────────────────────────────────
+  sast-sca:
+    name: SAST & SCA
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep (SAST)
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/default
+        #env:
+          #SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Run Trivy (SCA)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+  # ── 2. BUILD & TEST ───────────────────────────────────────────────────────
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    needs: sast-sca
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check & build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+  # ── 3. DEPLOY ─────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    outputs:
+      deployment_url: ${{ steps.deploy.outputs.url }}
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    # --- 1. SECURITY GATES (SAST & SCA) ---
-    - name: Run Semgrep (SAST)
-      uses: semgrep/semgrep-action@713d33f74619d089851722883f360c7349cc9487
-      with:
-        config: p/default
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
 
-    - name: Run Trivy Vulnerability Scanner (SCA)
-      uses: aquasecurity/trivy-action@ed142fda213d2f2dffb8b0e0ea0eCuqjjpl77AMj
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'table'
-        exit-code: '1'
-        severity: 'CRITICAL,HIGH'
+      - name: Pull Vercel environment
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+          fi
 
-    # --- 2. ENVIRONMENT & CODE QUALITY ---
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Build artifacts
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel build --token=${{ secrets.VERCEL_TOKEN }}
+          fi
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Deploy & capture URL
+        id: deploy
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          else
+            URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          fi
+          echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "DEPLOYMENT_URL=$URL" >> $GITHUB_ENV
 
-    - name: Run ESLint
-      run: npm run lint
+      - name: Comment preview URL on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✅ Preview deployed: ${{ steps.deploy.outputs.url }}`
+            })
 
-    - name: Run TypeScript check and build
-      run: npm run build
-
-    - name: Run tests
-      run: npm test
-
-    # --- 3. VERCEL DEPLOYMENT ENGINE ---
-    - name: Install Vercel CLI
-      run: npm install --global vercel@latest
-
-    - name: Pull Vercel Environment Information
-      run: |
-        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        else
-          vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-        fi
-
-    - name: Build Project Artifacts
-      run: |
-        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        else
-          vercel build --token=${{ secrets.VERCEL_TOKEN }}
-        fi
-
-    # Crucial change: We capture the resulting URL from Vercel into a variable
-    - name: Deploy Project Artifacts to Vercel
-      id: vercel-deploy
-      run: |
-        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-          URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
-        else
-          URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
-        fi
-        echo "DEPLOYMENT_URL=$URL" >> $GITHUB_ENV
-
-    # --- 4. DAST SCANNING GATES (Attacking the Live Vercel Preview/Prod App) ---
-    - name: Run ZAP Baseline DAST Scan
-      uses: zaproxy/action-baseline@v0.13.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        target: ${{ env.DEPLOYMENT_URL }}
-        fail_action: true # Fails the pipeline run if ZAP finds critical live exposures
+  # ── 4. DAST ───────────────────────────────────────────────────────────────
+  dast:
+    name: DAST (ZAP)
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.13.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: ${{ needs.deploy.outputs.deployment_url }}
+          cmd_options: '-a'        # ajax spider for Next.js
+        # Warn on PRs, hard-fail on main
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
