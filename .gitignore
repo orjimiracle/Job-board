@@ -26,3 +26,5 @@ out/
 .vscode/
 .idea/
 *.local
+.vercel
+.env*
