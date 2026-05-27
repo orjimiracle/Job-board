@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from '@/lib/supabase';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -58,8 +58,9 @@ const features = [
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignIn = async () => {
   setIsLoading(true);
+  const supabase = getSupabase();
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -154,7 +155,7 @@ export default function SignUpPage() {
                 variant="outline"
                 size="lg"
                 className="w-full h-12 text-base font-medium border-border hover:bg-accent transition-colors"
-                onClick={handleGoogleSignUp}
+                onClick={handleGoogleSignIn}
                 disabled={isLoading}
               >
                 {isLoading ? (
