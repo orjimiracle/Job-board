@@ -13,19 +13,22 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
-  # ── 1. SECURITY GATES ─────────────────────────────────────────────────────
+  # ── 1. SECURITY GATES ────────────────────────────────────────────────────
   sast-sca:
     name: SAST & SCA
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
       - name: Run Semgrep (SAST)
         uses: semgrep/semgrep-action@v1
         with:
           config: p/default
-        #env:
-          #SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Run Gitleaks (secrets scan)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Trivy (SCA)
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
@@ -36,8 +39,7 @@ jobs:
           exit-code: 1
           severity: CRITICAL,HIGH
 
-  # ── 2. BUILD & TEST ───────────────────────────────────────────────────────
-    # ── 2. BUILD & TEST ───────────────────────────────────────────────────────
+  # ── 2. BUILD & TEST ──────────────────────────────────────────────────────
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
@@ -57,9 +59,12 @@ jobs:
 
       - name: Lint
         run: npm run lint
-      
+
       - name: Type check & build
         run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Run tests
         run: npm test -- --ci --coverage
@@ -72,7 +77,6 @@ jobs:
           path: coverage/
           retention-days: 7
 
-
   # ── 3. DEPLOY ─────────────────────────────────────────────────────────────
   deploy:
     name: Deploy to Vercel
@@ -83,9 +87,8 @@ jobs:
       pull-requests: write
     outputs:
       deployment_url: ${{ steps.deploy.outputs.url }}
-
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
@@ -147,10 +150,10 @@ jobs:
       contents: read
       issues: write
     steps:
-    - name: ZAP Baseline Scan
-      uses: zaproxy/action-baseline@v0.13.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        target: ${{ needs.deploy.outputs.deployment_url }}
-        cmd_options: '-a -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_BYPASS_TOKEN }}"'
-      continue-on-error: ${{ github.event_name == 'pull_request' }}
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.13.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: ${{ needs.deploy.outputs.deployment_url }}
+          cmd_options: '-a -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_BYPASS_TOKEN }}"'
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
