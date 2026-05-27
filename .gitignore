@@ -28,3 +28,4 @@ out/
 *.local
 .vercel
 .env*
+.env.local

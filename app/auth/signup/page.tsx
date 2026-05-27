@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,13 +58,19 @@ const features = [
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleSignUp = () => {
-    setIsLoading(true);
-    // Simulate loading - in production, this would trigger Google OAuth
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-  };
+  const handleGoogleSignUp = async () => {
+  setIsLoading(true);
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
+  });
+  if (error) {
+    console.error(error);
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex bg-background">

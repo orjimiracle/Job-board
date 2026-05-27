@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase"; 
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -46,13 +47,19 @@ const benefits = [
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleSignIn = () => {
-    setIsLoading(true);
-    // Simulate loading - in production, this would trigger Google OAuth
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-  };
+  const handleGoogleSignIn = async () => {
+  setIsLoading(true);
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
+  });
+  if (error) {
+    console.error(error);
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex bg-background">
