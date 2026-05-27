@@ -27,4 +27,12 @@ module.exports = [
       sourceType: 'module',
     },
   },
+
+
+{
+  files: ['lib/**/*.js'],
+  languageOptions: {
+    sourceType: 'module',
+  },
+},
 ];
