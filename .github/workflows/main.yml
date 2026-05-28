@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          fetch-depth: 0  # Required for Gitleaks to scan full history
+          fetch-depth: 0
 
       - name: Run Semgrep (SAST)
         uses: semgrep/semgrep-action@v1
@@ -110,6 +110,8 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           GIT_REF: ${{ github.ref }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           if [ "$GIT_REF" = "refs/heads/main" ]; then
             vercel build --prod --token="$VERCEL_TOKEN"
@@ -122,14 +124,11 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           GIT_REF: ${{ github.ref }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
-          run: |
           if [ "$GIT_REF" = "refs/heads/main" ]; then
-          vercel build --prod --token="$VERCEL_TOKEN"
+            URL=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
           else
-          vercel build --token="$VERCEL_TOKEN"
+            URL=$(vercel deploy --prebuilt --token="$VERCEL_TOKEN")
           fi
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "DEPLOYMENT_URL=$URL" >> $GITHUB_ENV
@@ -155,6 +154,9 @@ jobs:
       contents: read
       issues: write
     steps:
+      - name: Debug deployment URL
+        run: echo "Target URL is ${{ needs.deploy.outputs.deployment_url }}"
+
       - name: ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.13.0
         with:
