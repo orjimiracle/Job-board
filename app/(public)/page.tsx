@@ -10,6 +10,7 @@ import { SearchBar } from "@/components/search-bar"
 import { WhatsAppCTA } from "@/components/whatsapp-cta"
 import { getJobs } from "@/lib/db"
 import { useEffect, useState } from "react"
+import type { Job } from "@/lib/types"
 
 const categories = [
   { name: "DevOps", icon: Zap, count: 24 },
@@ -21,7 +22,7 @@ const categories = [
 ]
 
 export default function HomePage() {
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
