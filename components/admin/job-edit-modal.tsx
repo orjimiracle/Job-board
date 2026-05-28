@@ -54,7 +54,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
         category: job.category,
         type: job.type,
         description: job.description,
-        requirements: job.requirements.join('\n'), // Convert array to string for textarea
+        requirements: job.requirements,
         applyUrl: job.applyUrl,
         featured: job.featured,
         sponsored: job.sponsored,
@@ -220,7 +220,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
                 <Textarea
                   id="requirements"
                   name="requirements"
-                  value={formData.requirements || ''}
+                  value={formData.requirements?.join('\n') || ''}
                   onChange={handleChange}
                   rows={4}
                   required
