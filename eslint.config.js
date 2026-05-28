@@ -9,7 +9,7 @@ module.exports = [
     files: ['**/*.js', '**/*.jsx'],
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: 'commonjs',
+      sourceType: 'module',
       globals: {
         require: 'readonly',
         module: 'writable',
@@ -17,7 +17,7 @@ module.exports = [
         __dirname: 'readonly',
         __filename: 'readonly',
         process: 'readonly',
-        console: 'readonly', // Add console as a readonly global
+        console: 'readonly',
       },
     },
   },
@@ -28,12 +28,4 @@ module.exports = [
       sourceType: 'module',
     },
   },
-
-
-{
-  files: ['lib/**/*.js'],
-  languageOptions: {
-    sourceType: 'module',
-  },
-},
 ];
