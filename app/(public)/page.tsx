@@ -47,7 +47,7 @@ export default function HomePage() {
             <div className="flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white">
                 <a 
-                  href="https://whatsapp.com/channel/example" 
+                  href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"

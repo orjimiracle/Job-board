@@ -14,7 +14,7 @@ export function WhatsAppCTA({ variant = "default", className }: WhatsAppCTAProps
         className
       )}>
         <a 
-          href="https://whatsapp.com/channel/example" 
+          href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i" 
           target="_blank" 
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 md:px-6 rounded-full shadow-lg transition-all hover:shadow-xl"
@@ -44,7 +44,7 @@ export function WhatsAppCTA({ variant = "default", className }: WhatsAppCTAProps
         </div>
         <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0">
           <a 
-            href="https://whatsapp.com/channel/example" 
+            href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i" 
             target="_blank" 
             rel="noopener noreferrer"
           >
@@ -71,7 +71,7 @@ export function WhatsAppCTA({ variant = "default", className }: WhatsAppCTAProps
       </p>
       <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white">
         <a 
-          href="https://whatsapp.com/channel/example" 
+          href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i" 
           target="_blank" 
           rel="noopener noreferrer"
           className="flex items-center gap-2"

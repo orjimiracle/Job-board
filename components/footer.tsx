@@ -48,7 +48,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} JobBoard. All rights reserved.
           </p>
           <a 
-            href="https://whatsapp.com/channel/example" 
+            href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors"

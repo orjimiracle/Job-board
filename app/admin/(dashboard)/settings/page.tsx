@@ -178,7 +178,7 @@ export default function SettingsPage() {
                   <FieldDescription>The URL to your WhatsApp channel or group.</FieldDescription>
                   <Input 
                     id="whatsappChannel" 
-                    defaultValue="https://whatsapp.com/channel/example" 
+                    defaultValue="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i" 
                     placeholder="https://whatsapp.com/channel/..."
                   />
                 </Field>
