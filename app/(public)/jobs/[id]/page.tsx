@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import type { Metadata } from "next"
@@ -15,11 +17,11 @@ import { cn } from "@/lib/utils"
 import type { Job } from "@/lib/types"
 
 interface JobPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
-  const { id } = params
+  const { id } = await params
   const job = await getJobById(id)
 
   if (!job) {
@@ -45,14 +47,14 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
 }
 
 export default async function JobPage({ params }: JobPageProps) {
-  const { id } = params
+  const { id } = await params
   const job = await getJobById(id)
 
   if (!job) {
     notFound()
   }
 
-  const allJobs = await getJobs();
+  const allJobs = await getJobs()
   const relatedJobs = allJobs
     .filter((j: Job) => j.id !== job.id && j.category === job.category)
     .slice(0, 3)
