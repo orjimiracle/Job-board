@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
-import { getSupabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase"; // Corrected import to use the singleton instance
 
 type AuthContextType = {
   user: User | null;
@@ -24,8 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = getSupabase();
-
+    // Directly use the imported supabase singleton
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -43,8 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signOut = async () => {
-    const supabase = getSupabase();
+  const signOut = async (): Promise<void> => { // Added explicit Promise<void> for clarity
+    // Directly use the imported supabase singleton
     await supabase.auth.signOut();
   };
 

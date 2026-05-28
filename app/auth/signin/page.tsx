@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { getSupabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -51,7 +51,6 @@ export default function SignInPage() {
 
 const handleGoogleSignIn = async () => {
   setIsLoading(true);
-  const supabase = getSupabase();
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
