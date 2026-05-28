@@ -36,7 +36,7 @@ import { getJobs, updateJob, deleteJob as deleteJobFromDb } from "@/lib/db"
 import type { Job } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { JobEditModal } from "@/components/admin/job-edit-modal"
-import { supabase } from "@/lib/supabase" // Import the singleton supabase client
+import { getSupabase } from "@/lib/supabase" // Import the singleton supabase client
 
 export default function ManageJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([])
@@ -57,7 +57,7 @@ export default function ManageJobsPage() {
     fetchJobsData();
 
     // Set up real-time subscription
-    const channel = supabase
+    const channel = getSupabase()
       .channel('jobs_realtime_changes') // Unique channel name
       .on(
         'postgres_changes',
@@ -87,7 +87,7 @@ export default function ManageJobsPage() {
 
     // Clean up subscription on component unmount
     return () => {
-      supabase.removeChannel(channel);
+      getSupabase().removeChannel(channel);
     };
   }, []); // Empty dependency array means this effect runs once on mount
 
