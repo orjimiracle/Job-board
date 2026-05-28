@@ -216,7 +216,7 @@ export default function ManageJobsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell text-muted-foreground">
-                        {new Date(job.posted_at).toLocaleDateString()}
+                        {new Date(job.postedat).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-center">
                         <Button

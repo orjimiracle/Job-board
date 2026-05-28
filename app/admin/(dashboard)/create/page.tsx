@@ -47,9 +47,9 @@ export default function CreateJobPage() {
       type: jobType as string,
       description: formData.get('description') as string,
       requirements: (formData.get('requirements') as string).split('\n').map(req => req.trim()).filter(req => req !== ''),
-      apply_url: formData.get('apply_url') as string,
+      applyUrl: formData.get('applyUrl') as string,
       featured: featured,
-      posted_at: new Date().toISOString(),
+      postedat: new Date().toISOString(),
       sponsored: false,
     };
 
@@ -185,13 +185,13 @@ export default function CreateJobPage() {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="apply_url">Apply URL</FieldLabel>
+                <FieldLabel htmlFor="applyUrl">Apply URL</FieldLabel>
                 <FieldDescription>
                   The external link where candidates will apply.
                 </FieldDescription>
                 <Input
-                  id="apply_url"
-                  name="apply_url"
+                  id="applyUrl"
+                  name="applyUrl"
                   type="url"
                   placeholder="https://company.com/careers/apply"
                   required

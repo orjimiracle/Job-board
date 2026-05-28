@@ -25,7 +25,7 @@ const mockJobs = [
     location: "San Francisco, CA",
     category: "DevOps",
     type: "Full-time",
-    posted_at: "2023-01-15T10:00:00Z",
+    postedat: "2023-01-15T10:00:00Z",
     featured: true,
   },
   {
@@ -35,7 +35,7 @@ const mockJobs = [
     location: "Remote",
     category: "Cybersecurity",
     type: "Full-time",
-    posted_at: "2023-01-10T09:00:00Z",
+    postedat: "2023-01-10T09:00:00Z",
     featured: false,
   },
   {
@@ -45,7 +45,7 @@ const mockJobs = [
     location: "New York, NY",
     category: "Software",
     type: "Internship",
-    posted_at: "2023-01-05T14:30:00Z",
+    postedat: "2023-01-05T14:30:00Z",
     featured: false,
   },
   {
@@ -55,7 +55,7 @@ const mockJobs = [
     location: "Boston, MA",
     category: "Software",
     type: "Full-time",
-    posted_at: "2023-01-01T11:00:00Z",
+    postedat: "2023-01-01T11:00:00Z",
     featured: true,
   },
   {
@@ -65,7 +65,7 @@ const mockJobs = [
     location: "London, UK",
     category: "Cloud",
     type: "Contract",
-    posted_at: "2022-12-28T16:00:00Z",
+    postedat: "2022-12-28T16:00:00Z",
     featured: false,
   },
 ];

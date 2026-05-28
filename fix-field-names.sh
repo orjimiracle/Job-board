@@ -1,10 +1,12 @@
 #!/bin/bash
-# Run this from your project root.
-# Renames all applyUrl → apply_url and postedAt → posted_at
-# across all .ts, .tsx, .js files (excluding node_modules and .next)
+# Run from your project root in Git Bash.
+# Fixes all field name references to match actual DB columns:
+#   apply_url  → applyUrl   (revert previous change)
+#   posted_at  → postedat   (revert + fix casing)
+#   postedAt   → postedat   (fix casing)
 
 FILES=$(grep -rl --include="*.ts" --include="*.tsx" --include="*.js" \
-  -e "applyUrl\|postedAt" \
+  -e "apply_url\|posted_at\|postedAt" \
   --exclude-dir=node_modules \
   --exclude-dir=.next \
   .)
@@ -14,25 +16,29 @@ echo "$FILES"
 echo ""
 
 for f in $FILES; do
-  # applyUrl → apply_url (field access, object keys, form names, HTML ids)
+  # Revert apply_url → applyUrl
   sed -i \
-    -e "s/job\.applyUrl/job.apply_url/g" \
-    -e "s/formData\.applyUrl/formData.apply_url/g" \
-    -e "s/'applyUrl'/'apply_url'/g" \
-    -e "s/\"applyUrl\"/\"apply_url\"/g" \
-    -e "s/applyUrl:/apply_url:/g" \
-    -e "s/htmlFor=\"applyUrl\"/htmlFor=\"apply_url\"/g" \
-    -e "s/id=\"applyUrl\"/id=\"apply_url\"/g" \
-    -e "s/name=\"applyUrl\"/name=\"apply_url\"/g" \
-    -e "s/formData\.get('applyUrl')/formData.get('apply_url')/g" \
+    -e "s/job\.apply_url/job.applyUrl/g" \
+    -e "s/formData\.apply_url/formData.applyUrl/g" \
+    -e "s/'apply_url'/'applyUrl'/g" \
+    -e "s/\"apply_url\"/\"applyUrl\"/g" \
+    -e "s/apply_url:/applyUrl:/g" \
+    -e "s/htmlFor=\"apply_url\"/htmlFor=\"applyUrl\"/g" \
+    -e "s/id=\"apply_url\"/id=\"applyUrl\"/g" \
+    -e "s/name=\"apply_url\"/name=\"applyUrl\"/g" \
+    -e "s/formData\.get('apply_url')/formData.get('applyUrl')/g" \
     "$f"
 
-  # postedAt → posted_at
+  # Fix postedAt → postedat (DB column is all lowercase)
   sed -i \
-    -e "s/job\.postedAt/job.posted_at/g" \
-    -e "s/postedAt:/posted_at:/g" \
-    -e "s/'postedAt'/'posted_at'/g" \
-    -e "s/\"postedAt\"/\"posted_at\"/g" \
+    -e "s/job\.postedAt/job.postedat/g" \
+    -e "s/job\.posted_at/job.postedat/g" \
+    -e "s/posted_at:/postedat:/g" \
+    -e "s/postedAt:/postedat:/g" \
+    -e "s/'postedAt'/'postedat'/g" \
+    -e "s/'posted_at'/'postedat'/g" \
+    -e "s/\"postedAt\"/\"postedat\"/g" \
+    -e "s/\"posted_at\"/\"postedat\"/g" \
     "$f"
 
   echo "Updated: $f"

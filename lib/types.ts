@@ -7,10 +7,10 @@ export interface Job {
   category: "DevOps" | "Cybersecurity" | "Cloud" | "Software" | "Internships" | "Scholarships"
   description: string
   requirements: string[]
-  apply_url: string
+  applyUrl: string
   featured: boolean
   sponsored: boolean
-  posted_at: string
+  postedat: string   // DB column is all lowercase: postedat
   salary?: string
 }
 
