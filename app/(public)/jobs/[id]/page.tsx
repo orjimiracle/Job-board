@@ -160,7 +160,7 @@ export default async function JobPage({ params }: JobPageProps) {
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
-                {job.requirements.map((req: string, index) => (
+                {job.requirements.map((req: string, index: number) => (
                   <li key={index} className="flex items-start gap-3">
                     <CheckCircle2 className="size-5 text-emerald-500 shrink-0 mt-0.5" />
                     <span className="text-muted-foreground">{req}</span>
