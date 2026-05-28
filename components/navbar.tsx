@@ -28,7 +28,6 @@ export function Navbar() {
           <span>JobBoard</span>
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
@@ -66,11 +65,7 @@ export function Navbar() {
             )
           )}
           <Button asChild className="hidden sm:flex bg-emerald-600 hover:bg-emerald-700 text-white">
-            
-              href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i" target="_blank" rel="noopener noreferrer">
               Join WhatsApp
             </a>
           </Button>
@@ -85,7 +80,6 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
       <div
         className={cn(
           "md:hidden border-t overflow-hidden transition-all duration-300",
@@ -127,11 +121,7 @@ export function Navbar() {
             )
           )}
           <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
-            
-              href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i" target="_blank" rel="noopener noreferrer">
               Join WhatsApp Channel
             </a>
           </Button>
