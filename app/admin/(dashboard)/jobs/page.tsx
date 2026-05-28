@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { MoreHorizontal, Pencil, Trash2, Star, StarOff, Eye, Plus, Search } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -32,14 +32,64 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { mockJobs } from "@/lib/mock-data"
+import { getJobs, updateJob, deleteJob as deleteJobFromDb } from "@/lib/db"
 import type { Job } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { JobEditModal } from "@/components/admin/job-edit-modal"
+import { supabase } from "@/lib/supabase" // Import the singleton supabase client
 
 export default function ManageJobsPage() {
-  const [jobs, setJobs] = useState<Job[]>(mockJobs)
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("")
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // State for edit modal visibility
+  const [jobToEdit, setJobToEdit] = useState<Job | null>(null); // State for job being edited
+
+  useEffect(() => {
+    async function fetchJobsData() {
+      const fetchedJobs = await getJobs();
+      if (fetchedJobs) {
+        setJobs(fetchedJobs);
+      }
+      setLoading(false);
+    }
+    fetchJobsData();
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('jobs_realtime_changes') // Unique channel name
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'jobs' },
+        (payload) => {
+          console.log('Change received!', payload);
+          setJobs((prevJobs) => {
+            if (payload.eventType === 'INSERT') {
+              // Add new job to the list
+              return [...prevJobs, payload.new as Job];
+            }
+            if (payload.eventType === 'UPDATE') {
+              // Update existing job
+              return prevJobs.map((job) =>
+                job.id === payload.old.id ? { ...job, ...payload.new as Job } : job
+              );
+            }
+            if (payload.eventType === 'DELETE') {
+              // Remove deleted job
+              return prevJobs.filter((job) => job.id !== payload.old.id);
+            }
+            return prevJobs;
+          });
+        }
+      )
+      .subscribe();
+
+    // Clean up subscription on component unmount
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []); // Empty dependency array means this effect runs once on mount
 
   const filteredJobs = jobs.filter(
     (job) =>
@@ -47,25 +97,50 @@ export default function ManageJobsPage() {
       job.company.toLowerCase().includes(search.toLowerCase())
   )
 
-  const toggleFeatured = (jobId: string) => {
-    setJobs((prev) =>
-      prev.map((job) =>
-        job.id === jobId ? { ...job, featured: !job.featured } : job
-      )
-    )
-  }
+  const toggleFeatured = async (jobId: string) => {
+    const jobToUpdate = jobs.find(job => job.id === jobId);
+    if (jobToUpdate) {
+      const updated = await updateJob(jobId, { featured: !jobToUpdate.featured });
+      if (updated) {
+        // State will be updated by real-time listener, no need to manually update here
+      } else {
+        console.error("Failed to toggle featured status.");
+      }
+    }
+  };
 
-  const deleteJob = (jobId: string) => {
-    setJobs((prev) => prev.filter((job) => job.id !== jobId))
-    setDeleteJobId(null)
-  }
+  const handleDeleteJob = async (jobId: string) => {
+    const success = await deleteJobFromDb(jobId);
+    if (success) {
+      // State will be updated by real-time listener, no need to manually update here
+      setDeleteJobId(null);
+    } else {
+      console.error("Failed to delete job.");
+    }
+  };
 
+  const handleEditJob = (job: Job) => {
+    setJobToEdit(job);
+    setIsEditModalOpen(true);
+  };
+
+  const handleJobUpdated = (updatedJob: Job) => {
+    // State will be updated by real-time listener, no need to manually update here
+  };
   const typeColors: Record<string, string> = {
     Remote: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     "Full-time": "bg-blue-500/10 text-blue-600 dark:text-blue-400",
     "Part-time": "bg-amber-500/10 text-amber-600 dark:text-amber-400",
     Internship: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
     Contract: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6 lg:p-8 flex justify-center items-center min-h-[50vh]">
+        <p>Loading jobs...</p>
+      </div>
+    );
   }
 
   return (
@@ -173,7 +248,10 @@ export default function ManageJobsPage() {
                                 View
                               </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-2">
+                            <DropdownMenuItem 
+                                className="flex items-center gap-2"
+                                onClick={() => handleEditJob(job)}
+                            >
                               <Pencil className="size-4" />
                               Edit
                             </DropdownMenuItem>
@@ -209,7 +287,7 @@ export default function ManageJobsPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteJobId && deleteJob(deleteJobId)}
+              onClick={() => deleteJobId && handleDeleteJob(deleteJobId)}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
               Delete
@@ -217,6 +295,15 @@ export default function ManageJobsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {jobToEdit && (
+        <JobEditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          job={jobToEdit}
+          onJobUpdated={handleJobUpdated}
+        />
+      )}
     </div>
   )
 }

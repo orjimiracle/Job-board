@@ -10,16 +10,17 @@ import { JobCard } from "@/components/job-card"
 import { AdSlot } from "@/components/ad-slot"
 import { ShareButtons } from "@/components/share-buttons"
 import { WhatsAppCTA } from "@/components/whatsapp-cta"
-import { mockJobs } from "@/lib/mock-data"
+import { getJobById, getJobs } from "@/lib/db"
 import { cn } from "@/lib/utils"
+import type { Job } from "@/lib/types"
 
 interface JobPageProps {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
-  const { id } = await params
-  const job = mockJobs.find((j) => j.id === id)
+  const { id } = params
+  const job = await getJobById(id)
 
   if (!job) {
     return {
@@ -29,30 +30,31 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
 
   return {
     title: `${job.title} at ${job.company}`,
-    description: job.description.slice(0, 160),
+    description: job.description?.slice(0, 160),
     openGraph: {
       title: `${job.title} at ${job.company}`,
-      description: job.description.slice(0, 160),
+      description: job.description?.slice(0, 160),
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title: `${job.title} at ${job.company}`,
-      description: job.description.slice(0, 160),
+      description: job.description?.slice(0, 160),
     },
   }
 }
 
 export default async function JobPage({ params }: JobPageProps) {
-  const { id } = await params
-  const job = mockJobs.find((j) => j.id === id)
+  const { id } = params
+  const job = await getJobById(id)
 
   if (!job) {
     notFound()
   }
 
-  const relatedJobs = mockJobs
-    .filter((j) => j.id !== job.id && j.category === job.category)
+  const allJobs = await getJobs();
+  const relatedJobs = allJobs
+    .filter((j: Job) => j.id !== job.id && j.category === job.category)
     .slice(0, 3)
 
   const typeColors: Record<string, string> = {

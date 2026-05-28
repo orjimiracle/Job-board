@@ -6,7 +6,8 @@ import { JobCard } from "@/components/job-card"
 import { AdSlot } from "@/components/ad-slot"
 import { SearchBar } from "@/components/search-bar"
 import { WhatsAppCTA } from "@/components/whatsapp-cta"
-import { mockJobs } from "@/lib/mock-data"
+import { getJobs } from "@/lib/db"
+import { useEffect, useState } from "react"
 
 const categories = [
   { name: "DevOps", icon: Zap, count: 24 },
@@ -18,10 +19,30 @@ const categories = [
 ]
 
 export default function HomePage() {
-  const featuredJobs = mockJobs.filter(job => job.featured)
-  const latestJobs = mockJobs.slice(0, 6)
-  const internships = mockJobs.filter(job => job.category === "Internships")
-  const scholarships = mockJobs.filter(job => job.category === "Scholarships")
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAllJobs() {
+      const fetchedJobs = await getJobs();
+      setJobs(fetchedJobs);
+      setLoading(false);
+    }
+    fetchAllJobs();
+  }, []);
+
+  const featuredJobs = jobs.filter(job => job.featured)
+  const latestJobs = jobs.slice(0, 6)
+  const internships = jobs.filter(job => job.category === "Internships")
+  const scholarships = jobs.filter(job => job.category === "Scholarships")
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Loading jobs...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">

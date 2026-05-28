@@ -15,7 +15,7 @@ import { JobFilters } from "@/components/job-filters"
 import { SearchBar } from "@/components/search-bar"
 import { AdSlot } from "@/components/ad-slot"
 import { WhatsAppCTA } from "@/components/whatsapp-cta"
-import { mockJobs } from "@/lib/mock-data"
+import { getJobs } from "@/lib/db"
 import type { Job } from "@/lib/types"
 
 export const metadata: Metadata = {
@@ -63,7 +63,8 @@ function filterJobs(jobs: Job[], filters: {
 
 export default async function JobsPage({ searchParams }: JobsPageProps) {
   const params = await searchParams
-  const filteredJobs = filterJobs(mockJobs, params)
+  const allJobs = await getJobs();
+  const filteredJobs = filterJobs(allJobs, params)
   const sponsoredJobs = filteredJobs.filter((job) => job.sponsored)
 
   return (
