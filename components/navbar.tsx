@@ -1,11 +1,11 @@
 "use client"
-
 import Link from "next/link"
 import { useState } from "react"
-import { Menu, X, Briefcase } from "lucide-react"
+import { Menu, X, Briefcase, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/contexts/auth-context"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -16,6 +16,7 @@ const navLinks = [
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { user, loading, signOut } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -42,13 +43,32 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button asChild variant="ghost" className="hidden sm:flex">
-            <Link href="/auth/signin">Sign In</Link>
-          </Button>
+          {!loading && (
+            user ? (
+              <>
+                <span className="hidden sm:block text-sm text-muted-foreground">
+                  {user.user_metadata?.full_name ?? user.email}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="hidden sm:flex gap-1"
+                  onClick={signOut}
+                >
+                  <LogOut className="size-4" />
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <Button asChild variant="ghost" className="hidden sm:flex">
+                <Link href="/auth/signin">Sign In</Link>
+              </Button>
+            )
+          )}
           <Button asChild className="hidden sm:flex bg-emerald-600 hover:bg-emerald-700 text-white">
-            <a 
-              href="https://whatsapp.com/channel/example" 
-              target="_blank" 
+            
+              href="https://whatsapp.com/channel/example"
+              target="_blank"
               rel="noopener noreferrer"
             >
               Join WhatsApp
@@ -69,7 +89,7 @@ export function Navbar() {
       <div
         className={cn(
           "md:hidden border-t overflow-hidden transition-all duration-300",
-          mobileMenuOpen ? "max-h-64" : "max-h-0"
+          mobileMenuOpen ? "max-h-80" : "max-h-0"
         )}
       >
         <div className="container px-4 py-4 flex flex-col gap-3">
@@ -83,22 +103,21 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Button asChild variant="outline" className="mt-2">
-            <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
-              Sign In
-            </Link>
-          </Button>
-          <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
-            <a 
-              href="https://whatsapp.com/channel/example" 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              Join WhatsApp Channel
-            </a>
-          </Button>
-        </div>
-      </div>
-    </header>
-  )
-}
+          {!loading && (
+            user ? (
+              <>
+                <span className="text-sm text-muted-foreground py-1">
+                  {user.user_metadata?.full_name ?? user.email}
+                </span>
+                <Button
+                  variant="outline"
+                  className="mt-2"
+                  onClick={() => { signOut(); setMobileMenuOpen(false); }}
+                >
+                  <LogOut className="size-4 mr-2" />
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <Button asChild variant="outline" className="mt-2">
+                <Link href="/auth/signin" onClick={()
