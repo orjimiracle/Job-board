@@ -42,6 +42,7 @@ const jobTypes = ["Remote", "Full-time", "Part-time", "Internship", "Contract"]
 
 export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModalProps) {
   const [formData, setFormData] = useState<Partial<Job>>({});
+  const [requirementsText, setRequirementsText] = useState(''); // New state for textarea
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -59,12 +60,17 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
         featured: job.featured,
         sponsored: job.sponsored,
       });
+      setRequirementsText(job.requirements.join('\n')); // Initialize requirementsText
     }
   }, [job]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === 'requirements') {
+      setRequirementsText(value);
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSelectChange = (name: keyof Job, value: string) => {
@@ -82,7 +88,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
     setIsSubmitting(true);
     const updates = {
       ...formData,
-      requirements: (formData.requirements as string)?.split('\n').map(req => req.trim()).filter(req => req !== ''),
+      requirements: requirementsText.split('\n').map(req => req.trim()).filter(req => req !== ''),
     };
 
     const updated = await updateJob(job.id, updates);
@@ -220,7 +226,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
                 <Textarea
                   id="requirements"
                   name="requirements"
-                  value={formData.requirements?.join('\n') || ''}
+                  value={requirementsText}
                   onChange={handleChange}
                   rows={4}
                   required
