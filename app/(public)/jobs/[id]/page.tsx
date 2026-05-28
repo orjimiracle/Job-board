@@ -198,7 +198,8 @@ export default async function JobPage({ params }: JobPageProps) {
             <div>
               <h2 className="text-2xl font-bold mb-6">Related Jobs</h2>
               <div className="grid gap-4">
-                {relatedJobs.map((relatedJob) => (
+                {relatedJobs.map((relatedJob: Job) => (
+
                   <JobCard key={relatedJob.id} job={relatedJob} variant="compact" />
                 ))}
               </div>

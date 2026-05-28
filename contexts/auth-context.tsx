@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase"; // Corrected import to use the singleton instance
+import { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
+import { getSupabase } from "@/lib/supabase";
 
 type AuthContextType = {
   user: User | null;
@@ -24,15 +24,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Directly use the imported supabase singleton
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const supabase = getSupabase();
+
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: AuthChangeEvent, session: Session | null) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -42,8 +43,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signOut = async (): Promise<void> => { // Added explicit Promise<void> for clarity
-    // Directly use the imported supabase singleton
+  const signOut = async (): Promise<void> => {
+    const supabase = getSupabase();
     await supabase.auth.signOut();
   };
 
