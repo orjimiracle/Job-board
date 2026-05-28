@@ -67,7 +67,7 @@ export function Navbar() {
           )}
           <Button asChild className="hidden sm:flex bg-emerald-600 hover:bg-emerald-700 text-white">
             
-              href="https://whatsapp.com/channel/example"
+              href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -120,4 +120,23 @@ export function Navbar() {
               </>
             ) : (
               <Button asChild variant="outline" className="mt-2">
-                <Link href="/auth/signin" onClick={()
+                <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
+                  Sign In
+                </Link>
+              </Button>
+            )
+          )}
+          <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            
+              href="https://whatsapp.com/channel/0029VbDEyiMBvvscpoIaaH2i"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Join WhatsApp Channel
+            </a>
+          </Button>
+        </div>
+      </div>
+    </header>
+  )
+}
