@@ -158,9 +158,10 @@ jobs:
         run: echo "Target URL is ${{ needs.deploy.outputs.deployment_url }}"
 
       - name: ZAP Baseline Scan
+        continue-on-error: ${{ github.event_name == 'pull_request' }}  # step-level, not inside with:
         uses: zaproxy/action-baseline@v0.13.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: ${{ needs.deploy.outputs.deployment_url }}
+          artifact_name: zap-scan  # hyphen instead of underscore fixes artifact upload 400 error
           cmd_options: '-a -z "-config replacer.full_list(0).description=auth -config replacer.full_list(0).enabled=true -config replacer.full_list(0).matchtype=REQ_HEADER -config replacer.full_list(0).matchstr=x-vercel-protection-bypass -config replacer.full_list(0).replacement=${{ secrets.VERCEL_BYPASS_TOKEN }}"'
-          continue-on-error: ${{ github.event_name == 'pull_request' }}
