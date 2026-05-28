@@ -3,7 +3,72 @@ import { Briefcase, MousePointerClick, Users, TrendingUp, Eye, Sparkles } from "
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { dashboardStats, mockJobs } from "@/lib/mock-data"
+const dashboardStats = {
+  totalJobs: 150,
+  totalClicks: 2500,
+  totalVisitors: 10000,
+  mostViewedJob: {
+    id: "job1",
+    title: "Senior DevOps Engineer",
+    company: "TechCorp",
+    location: "San Francisco, CA",
+    type: "Full-time",
+    featured: true,
+  },
+};
+
+const mockJobs = [
+  {
+    id: "job1",
+    title: "Senior DevOps Engineer",
+    company: "TechCorp",
+    location: "San Francisco, CA",
+    category: "DevOps",
+    type: "Full-time",
+    postedAt: "2023-01-15T10:00:00Z",
+    featured: true,
+  },
+  {
+    id: "job2",
+    title: "Cloud Security Architect",
+    company: "SecureNet",
+    location: "Remote",
+    category: "Cybersecurity",
+    type: "Full-time",
+    postedAt: "2023-01-10T09:00:00Z",
+    featured: false,
+  },
+  {
+    id: "job3",
+    title: "Junior Software Developer",
+    company: "InnovateX",
+    location: "New York, NY",
+    category: "Software",
+    type: "Internship",
+    postedAt: "2023-01-05T14:30:00Z",
+    featured: false,
+  },
+  {
+    id: "job4",
+    title: "Data Scientist",
+    company: "DataCo",
+    location: "Boston, MA",
+    category: "Software",
+    type: "Full-time",
+    postedAt: "2023-01-01T11:00:00Z",
+    featured: true,
+  },
+  {
+    id: "job5",
+    title: "Network Engineer",
+    company: "GlobalNet",
+    location: "London, UK",
+    category: "Cloud",
+    type: "Contract",
+    postedAt: "2022-12-28T16:00:00Z",
+    featured: false,
+  },
+];
 
 const stats = [
   {

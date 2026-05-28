@@ -26,7 +26,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { analyticsData } from "@/lib/mock-data";
 import {
   LineChart,
   Line,
@@ -52,6 +51,27 @@ import {
   Calendar,
   Download,
 } from "lucide-react";
+
+// Placeholder data for charts
+const jobClicksData = [
+  { date: "Mon", clicks: 50 },
+  { date: "Tue", clicks: 70 },
+  { date: "Wed", clicks: 60 },
+  { date: "Thu", clicks: 90 },
+  { date: "Fri", clicks: 120 },
+  { date: "Sat", clicks: 40 },
+  { date: "Sun", clicks: 30 },
+];
+
+const whatsappClicksData = [
+  { date: "Mon", clicks: 10 },
+  { date: "Tue", clicks: 15 },
+  { date: "Wed", clicks: 12 },
+  { date: "Thu", clicks: 20 },
+  { date: "Fri", clicks: 25 },
+  { date: "Sat", clicks: 8 },
+  { date: "Sun", clicks: 7 },
+];
 
 // Extended mock data for activity logs
 const activityLogs = [
@@ -83,7 +103,6 @@ const dailyVisitors = [
   { date: "Sat", visitors: 980, newUsers: 210, returning: 770 },
   { date: "Sun", visitors: 1090, newUsers: 240, returning: 850 },
 ];
-
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState("7d");
 
@@ -407,7 +426,7 @@ export default function AnalyticsPage() {
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analyticsData.jobClicks}>
+                    <BarChart data={jobClicksData}>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                       <XAxis
                         dataKey="date"
@@ -443,7 +462,7 @@ export default function AnalyticsPage() {
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={analyticsData.whatsappClicks}>
+                    <LineChart data={whatsappClicksData}>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                       <XAxis
                         dataKey="date"

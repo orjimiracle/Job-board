@@ -54,8 +54,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
         category: job.category,
         type: job.type,
         description: job.description,
-        requirements: job.requirements.join('
-'), // Convert array to string for textarea
+        requirements: job.requirements.join('\n'), // Convert array to string for textarea
         applyUrl: job.applyUrl,
         featured: job.featured,
         sponsored: job.sponsored,
@@ -83,8 +82,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
     setIsSubmitting(true);
     const updates = {
       ...formData,
-      requirements: (formData.requirements as string)?.split('
-').map(req => req.trim()).filter(req => req !== ''),
+      requirements: (formData.requirements as string)?.split('\n').map(req => req.trim()).filter(req => req !== ''),
     };
 
     const updated = await updateJob(job.id, updates);
