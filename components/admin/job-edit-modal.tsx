@@ -42,7 +42,7 @@ const jobTypes = ["Remote", "Full-time", "Part-time", "Internship", "Contract"]
 
 export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModalProps) {
   const [formData, setFormData] = useState<Partial<Job>>({});
-  const [requirementsText, setRequirementsText] = useState(''); // New state for textarea
+  const [requirementsText, setRequirementsText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
         featured: job.featured,
         sponsored: job.sponsored,
       });
-      setRequirementsText(job.requirements.join('\n')); // Initialize requirementsText
+      setRequirementsText(job.requirements.join('\n'));
     }
   }, [job]);
 
@@ -94,7 +94,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
     const updated = await updateJob(job.id, updates);
 
     if (updated) {
-      onJobUpdated(updated); // Pass the updated job back to the parent
+      onJobUpdated(updated);
       onClose();
     } else {
       console.error("Failed to update job.");
@@ -104,15 +104,20 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px]">
-        <DialogHeader>
+      {/* max-h-[90vh] + flex col keeps the modal within the viewport */}
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] flex flex-col p-0">
+
+        {/* Fixed header — never scrolls away */}
+        <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
           <DialogTitle>Edit Job: {job?.title}</DialogTitle>
           <DialogDescription>
-            Make changes to the job details here. Click save when you're done.
+            Make changes to the job details here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
+
+        {/* form fills remaining height; inner div scrolls */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="flex-1 overflow-y-auto px-6 py-4">
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="title">Job Title</FieldLabel>
@@ -279,10 +284,11 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
                   onCheckedChange={(checked) => handleSwitchChange('sponsored', checked)}
                 />
               </div>
-
             </FieldGroup>
           </div>
-          <DialogFooter>
+
+          {/* Fixed footer — Save button always visible */}
+          <DialogFooter className="px-6 py-4 border-t shrink-0">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
@@ -291,6 +297,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
             </Button>
           </DialogFooter>
         </form>
+
       </DialogContent>
     </Dialog>
   )
