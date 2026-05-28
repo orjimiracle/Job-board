@@ -56,7 +56,7 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
         type: job.type,
         description: job.description,
         requirements: job.requirements,
-        applyUrl: job.applyUrl,
+        apply_url: job.apply_url,
         featured: job.featured,
         sponsored: job.sponsored,
       });
@@ -234,15 +234,15 @@ export function JobEditModal({ isOpen, onClose, job, onJobUpdated }: JobEditModa
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="applyUrl">Apply URL</FieldLabel>
+                <FieldLabel htmlFor="apply_url">Apply URL</FieldLabel>
                 <FieldDescription>
                   The external link where candidates will apply.
                 </FieldDescription>
                 <Input
-                  id="applyUrl"
-                  name="applyUrl"
+                  id="apply_url"
+                  name="apply_url"
                   type="url"
-                  value={formData.applyUrl || ''}
+                  value={formData.apply_url || ''}
                   onChange={handleChange}
                   required
                 />

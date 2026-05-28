@@ -114,7 +114,7 @@ export default async function JobPage({ params }: JobPageProps) {
               </span>
               <span className="flex items-center gap-2">
                 <Clock className="size-5" />
-                Posted {new Date(job.postedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                Posted {new Date(job.posted_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
               </span>
             </div>
 
@@ -124,7 +124,7 @@ export default async function JobPage({ params }: JobPageProps) {
 
             <div className="flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="gap-2">
-                <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
+                <a href={job.apply_url} target="_blank" rel="noopener noreferrer">
                   Apply Now
                   <ExternalLink className="size-4" />
                 </a>
@@ -180,7 +180,7 @@ export default async function JobPage({ params }: JobPageProps) {
                 </p>
               </div>
               <Button asChild size="lg" className="gap-2 shrink-0">
-                <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
+                <a href={job.apply_url} target="_blank" rel="noopener noreferrer">
                   Apply Now
                   <ExternalLink className="size-4" />
                 </a>
@@ -216,7 +216,7 @@ export default async function JobPage({ params }: JobPageProps) {
                   Apply directly on the company&apos;s website to submit your application.
                 </p>
                 <Button asChild className="w-full gap-2">
-                  <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={job.apply_url} target="_blank" rel="noopener noreferrer">
                     Apply Now
                     <ExternalLink className="size-4" />
                   </a>

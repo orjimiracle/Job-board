@@ -100,7 +100,7 @@ export function JobCard({ job, variant = "default" }: JobCardProps) {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Clock className="size-4" />
-                  {new Date(job.postedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  {new Date(job.posted_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </span>
               </div>
             </div>
