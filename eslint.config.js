@@ -17,6 +17,7 @@ module.exports = [
         __dirname: 'readonly',
         __filename: 'readonly',
         process: 'readonly',
+        console: 'readonly', // Add console as a readonly global
       },
     },
   },
